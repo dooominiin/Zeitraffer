@@ -36,6 +36,7 @@ video_file_paths = sorted([os.path.join(video_dir_path, filename) for filename i
 with open("mylist.txt", "w") as f:
     for path in video_file_paths:
         f.write("file '{}'\n".format(path))
-
+        print("file '{}'\n".format(path))
 # Concatenate the videos using ffmpeg
-subprocess.call(["ffmpeg", "-f", "concat", "-safe", "0", "-i", "mylist.txt", "-vf", "setpts=0.125*PTS,select='not(mod(n,2))'", "-c:v", "libx264", "-preset", "ultrafast", "-r", "60", merged_video_file_path])
+#subprocess.call(["ffmpeg", "-f", "concat", "-safe", "0", "-i", "mylist.txt", "-vf", "setpts=0.25*PTS,select='not(mod(n,2))'", "-c:v", "libx264", "-preset", "ultrafast", "-r", "60", merged_video_file_path])
+subprocess.call(["ffmpeg", "-f", "concat", "-safe", "0", "-i", "mylist.txt", "-vf", "setpts=0.125*PTS,select='not(mod(n,2))'", "-c:v", "libx264", "-preset", "ultrafast", merged_video_file_path])
