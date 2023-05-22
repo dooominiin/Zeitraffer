@@ -38,5 +38,11 @@ with open("mylist.txt", "w") as f:
         f.write("file '{}'\n".format(path))
         print("file '{}'\n".format(path))
 # Concatenate the videos using ffmpeg
-#subprocess.call(["ffmpeg", "-f", "concat", "-safe", "0", "-i", "mylist.txt", "-vf", "setpts=0.25*PTS,select='not(mod(n,2))'", "-c:v", "libx264", "-preset", "ultrafast", "-r", "60", merged_video_file_path])
 subprocess.call(["ffmpeg", "-f", "concat", "-safe", "0", "-i", "mylist.txt", "-vf", "setpts=0.125*PTS,select='not(mod(n,2))'", "-c:v", "libx264", "-preset", "ultrafast", merged_video_file_path])
+
+
+# Filter the frames based on brightness using ffmpeg
+brightness_threshold = 100
+filtered_video_file_path = os.path.join(merged_video_dir_path, "filtered_" + merged_video_filename)
+subprocess.call(["ffmpeg", "-i", merged_video_file_path, "-vf", "blackdetect=d={}:pix_th={}".format(1/60, brightness_threshold), "-c:v", "copy", "-an", "-f", "null", "-",
+                 "-vf", "select=not(between(t\, {}, {}))".format(0, 1/60), "-c:v", "libx264", "-preset", "ultrafast", filtered_video_file_path])

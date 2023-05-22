@@ -20645,3 +20645,12 @@
 2023-05-22 16:42:07 timelapse_0126.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 19/16 digital_gain: 1
 2023-05-22 16:43:07 timelapse_0127.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 19/16 digital_gain: 1
 2023-05-22 16:44:08 timelapse_0128.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 19/16 digital_gain: 1
+2023-05-22 16:45:08 timelapse_0129.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 19/16 digital_gain: 1
+2023-05-22 16:46:08 timelapse_0130.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 19/16 digital_gain: 1
+2023-05-22 16:47:08 timelapse_0131.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 19/16 digital_gain: 1
+2023-05-22 16:48:08 timelapse_0132.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 19/16 digital_gain: 1
+2023-05-22 16:49:09 timelapse_0133.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 19/16 digital_gain: 1
+2023-05-22 16:50:08 timelapse_0134.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 19/16 digital_gain: 1
+2023-05-22 16:51:08 timelapse_0135.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 19/16 digital_gain: 1
+2023-05-22 16:52:08 timelapse_0136.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 19/16 digital_gain: 1
+2023-05-22 16:53:08 timelapse_0137.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 19/16 digital_gain: 1
