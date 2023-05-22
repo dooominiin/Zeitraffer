@@ -3,7 +3,7 @@ import subprocess
 
 # Define directory paths
 video_dir_path = "/home/raspi/Desktop/Zeitraffer/Video"
-merged_video_dir_path = "/home/raspi/Desktop/Zeitraffer/Video komplett"
+merged_video_dir_path = "/home/raspi/Desktop/Zeitraffer/Video_komplett"
 
 # Create directory if it doesn't exist
 if not os.path.exists(merged_video_dir_path):

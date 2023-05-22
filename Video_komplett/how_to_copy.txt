@@ -1,0 +1,2 @@
+vom windowspc aus:
+scp -r raspi@10.84.2.204:"/home/raspi/Desktop/Zeitraffer/Video_komplett" "C:/Users/domin/Desktop" 
