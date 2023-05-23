@@ -21647,3 +21647,4 @@
 2023-05-23 09:24:08 timelapse_0049.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 1 digital_gain: 1
 2023-05-23 09:25:09 timelapse_0050.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 1 digital_gain: 1
 2023-05-23 09:26:08 timelapse_0051.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 1 digital_gain: 1
+2023-05-23 09:27:10 timelapse_0052.jpg exposure_speed: 33327 awb_gains: (Fraction(281, 256), Fraction(115, 64)) analog_gain: 1 digital_gain: 1
