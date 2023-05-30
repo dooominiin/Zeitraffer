@@ -1,5 +1,6 @@
 import os
 import subprocess
+import re
 
 # Define directory paths
 video_dir_path = "/home/raspi/Desktop/Zeitraffer/Video"
@@ -42,7 +43,43 @@ subprocess.call(["ffmpeg", "-f", "concat", "-safe", "0", "-i", "mylist.txt", "-v
 
 
 # Filter the frames based on brightness using ffmpeg
-brightness_threshold = 100
+brightness_threshold = 0.9
 filtered_video_file_path = os.path.join(merged_video_dir_path, "filtered_" + merged_video_filename)
-subprocess.call(["ffmpeg", "-i", merged_video_file_path, "-vf", "blackdetect=d={}:pix_th={}".format(1/60, brightness_threshold), "-c:v", "copy", "-an", "-f", "null", "-",
-                 "-vf", "select=not(between(t\, {}, {}))".format(0, 1/60), "-c:v", "libx264", "-preset", "ultrafast", filtered_video_file_path])
+
+# Extract blackdetect information from ffmpeg output
+ffmpeg_cmd = ["ffmpeg", "-i", merged_video_file_path, "-vf", "blackdetect=d=0.016666666666666666:pix_th={}".format(brightness_threshold), "-f", "null", "-"]
+output = subprocess.check_output(ffmpeg_cmd, stderr=subprocess.STDOUT)
+output_str = output.decode("utf-8")
+
+blackdetect_info = []
+pattern = r"black_start:([\d.]+) black_end:([\d.]+)"
+matches = re.findall(pattern, output_str)
+for match in matches:
+    start_time = float(match[0])
+    end_time = float(match[1])
+    blackdetect_info.append({"lavfi.black_start": start_time, "lavfi.black_end": end_time})
+
+# Process blackdetect information
+trim_filter = ""
+for i, info in enumerate(blackdetect_info):
+    start_time = float(info["lavfi.black_start"])
+    end_time = float(info["lavfi.black_end"])
+    trim_filter += "[0:v]trim=start={}:end={},setpts=PTS-STARTPTS[v{}];[0:a]atrim=start={}:end={},asetpts=PTS-STARTPTS[a{}];".format(
+        start_time, end_time, i, start_time, end_time, i
+    )
+
+filter_complex = "{}concat=n={}:v=1:a=1[v][a]".format(trim_filter, len(blackdetect_info))
+subprocess.call(
+    [
+        "ffmpeg",
+        "-i",
+        merged_video_file_path,
+        "-filter_complex",
+        filter_complex,
+        "-map",
+        "[v]",
+        "-map",
+        "[a]",
+        filtered_video_file_path,
+    ]
+)
