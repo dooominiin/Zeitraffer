@@ -14,6 +14,7 @@ camera = picamera.PiCamera()
 # Turn the camera's LED off
 camera.led = False
 camera.resolution = (2592,1458)
+camera.rotation = 180
 camera.framerate = 2
 camera.iso = 100 
 camera.shutter_speed = 33333  # Zeit in Mikrosekunden
