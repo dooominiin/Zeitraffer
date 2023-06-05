@@ -1,5 +1,5 @@
 import moviepy
-
+import pickle
 import os
 import subprocess
 import re
@@ -92,17 +92,19 @@ def delete_frames_in_video(merged_video_file_path, delete_frames):
     merged_video_dir_path = os.path.dirname(merged_video_file_path)
     merged_video_filename = os.path.basename(merged_video_file_path)
     filtered_video_file_path = os.path.join(merged_video_dir_path, "filtered_" + merged_video_filename)
-    
+    my_select_string = select_string(delete_frames)
     
     # ffmpeg-Befehl zum Löschen der Frames
     ffmpeg_command = [
         "ffmpeg",
+        "-threads",
+        "2",
         "-i",
         merged_video_file_path,
         "-vf",
-        f"select='not(eq(n\,{''.join(str(i) for i, delete in enumerate(delete_frames) if delete)})',setpts=N/FRAME_RATE/TB",
-        "-af",
-        f"aselect='not(eq(n\,{''.join(str(i) for i, delete in enumerate(delete_frames) if delete)})',asetpts=N/SR/TB",
+        my_select_string,
+        "-preset",
+        "ultrafast",
         "-c:v",
         "libx264",
         "-c:a",
@@ -110,16 +112,33 @@ def delete_frames_in_video(merged_video_file_path, delete_frames):
         filtered_video_file_path
     ]
 
+    print(ffmpeg_command)
 
     # ffmpeg-Befehl ausführen
     subprocess.call(ffmpeg_command)
 
+def select_string(bool_array):
+    selected_frames = [str(i) for i, is_frame_bright in enumerate(bool_array) if is_frame_bright]  # Liste der Indexe, bei denen der Wert True ist
+    ffmpeg_select_string = "+".join([f"eq(n,{frame_index})" for frame_index in selected_frames])  # Erstelle den String im gewünschten Format
+    return f"select='{ffmpeg_select_string}',setpts=N/FRAME_RATE/TB"
 
 
 if __name__ == "__main__":
     #merged_video_file_path = merge_Video(video_dir_path, merged_video_dir_path)
     print("hallo")
     merged_video_file_path = "/home/raspi/Desktop/Zeitraffer/Video_komplett/timelapse_video_merged.mp4"
+    #merged_video_file_path = "/home/raspi/Desktop/Zeitraffer/Video/timelapse_video_0001.mp4"
     delete_frames = create_delete_frames_array(merged_video_file_path)
     
+    #delete_frames = [True] * 100
+
+    
+    # Array speichern
+    with open("delete_frames.pickle", "wb") as f:
+        pickle.dump(delete_frames, f)
+    # Array laden
+    with open("delete_frames.pickle", "rb") as f:
+        loaded_delet_frames = pickle.load(f)
+
+
     delete_frames_in_video(merged_video_file_path, delete_frames)
