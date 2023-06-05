@@ -1,6 +1,27 @@
 import os
 import subprocess
 import re
+from moviepy.editor import VideoFileClip, concatenate
+from moviepy.editor import ImageSequenceClip
+import numpy as np
+from PIL import Image
+
+# Funktion zum Überprüfen der Helligkeit eines Frames
+def check_brightness(frame):
+    # Konvertieren Sie den Frame in den HSV-Farbraum
+    hsv_frame = frame.convert("HSV")
+    
+    # Extrahieren Sie den V-Kanal (Helligkeitskanal)
+    v_channel = np.array(hsv_frame)[:, :, 2]
+    
+    # Definieren Sie Ihre Bedingungen für die Helligkeit
+    brightness_threshold = 20  # Beispielwert für die Helligkeitsschwelle
+    
+    # Überprüfen Sie die Helligkeit des Frames
+    is_bright = np.mean(v_channel) > brightness_threshold
+    
+    return is_bright
+
 
 # Define directory paths
 video_dir_path = "/home/raspi/Desktop/Zeitraffer/Video"
@@ -38,48 +59,54 @@ with open("mylist.txt", "w") as f:
     for path in video_file_paths:
         f.write("file '{}'\n".format(path))
         print("file '{}'\n".format(path))
+
 # Concatenate the videos using ffmpeg
 subprocess.call(["ffmpeg", "-f", "concat", "-safe", "0", "-i", "mylist.txt", "-vf", "setpts=0.125*PTS,select='not(mod(n,2))'", "-c:v", "libx264", "-preset", "ultrafast", merged_video_file_path])
 
 
+
+
+
+
+
+
+
+
+
+
 # Filter the frames based on brightness using ffmpeg
-brightness_threshold = 0.9
+merged_video_dir_path = os.path.dirname(merged_video_file_path)
+merged_video_filename = os.path.basename(merged_video_file_path)
 filtered_video_file_path = os.path.join(merged_video_dir_path, "filtered_" + merged_video_filename)
 
-# Extract blackdetect information from ffmpeg output
-ffmpeg_cmd = ["ffmpeg", "-i", merged_video_file_path, "-vf", "blackdetect=d=0.016666666666666666:pix_th={}".format(brightness_threshold), "-f", "null", "-"]
-output = subprocess.check_output(ffmpeg_cmd, stderr=subprocess.STDOUT)
-output_str = output.decode("utf-8")
+# Video mit MoviePy öffnen
+video = VideoFileClip(merged_video_file_path)
 
-blackdetect_info = []
-pattern = r"black_start:([\d.]+) black_end:([\d.]+)"
-matches = re.findall(pattern, output_str)
-for match in matches:
-    start_time = float(match[0])
-    end_time = float(match[1])
-    blackdetect_info.append({"lavfi.black_start": start_time, "lavfi.black_end": end_time})
+# Neuen Video-Clip erstellen
+filtered_video = None
 
-# Process blackdetect information
-trim_filter = ""
-for i, info in enumerate(blackdetect_info):
-    start_time = float(info["lavfi.black_start"])
-    end_time = float(info["lavfi.black_end"])
-    trim_filter += "[0:v]trim=start={}:end={},setpts=PTS-STARTPTS[v{}];[0:a]atrim=start={}:end={},asetpts=PTS-STARTPTS[a{}];".format(
-        start_time, end_time, i, start_time, end_time, i
-    )
+# Schleife über jeden Frame im Video
+for idx, frame in enumerate(video.iter_frames(), start=1):
+    # Konvertieren Sie den Frame in ein Image-Objekt
+    frame_image = Image.fromarray(frame)
+    
+    # Überprüfen Sie die Helligkeit des Frames
+    is_bright = check_brightness(frame_image)
+    
+    # Frame zum gefilterten Video hinzufügen, wenn Helligkeitsbedingung erfüllt ist
+    if is_bright:
+        if filtered_video is None:
+            # Erstellen Sie das gefilterte Video und speichern Sie den aktuellen Frame als Startpunkt
+            filtered_video = ImageSequenceClip([frame], fps=video.fps)
+        else:
+            # Fügen Sie den aktuellen Frame zum gefilterten Video hinzu
+            filtered_video = concatenate([filtered_video, ImageSequenceClip([frame], fps=video.fps)])
+    
+    print(f"Frame Nr. : {idx}")
 
-filter_complex = "{}concat=n={}:v=1:a=1[v][a]".format(trim_filter, len(blackdetect_info))
-subprocess.call(
-    [
-        "ffmpeg",
-        "-i",
-        merged_video_file_path,
-        "-filter_complex",
-        filter_complex,
-        "-map",
-        "[v]",
-        "-map",
-        "[a]",
-        filtered_video_file_path,
-    ]
-)
+# Speichern Sie das gefilterte Video
+filtered_video.write_videofile(filtered_video_file_path)
+
+# Video-Objekte freigeben
+video.close()
+filtered_video.close()
