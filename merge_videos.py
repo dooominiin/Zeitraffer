@@ -70,43 +70,40 @@ subprocess.call(["ffmpeg", "-f", "concat", "-safe", "0", "-i", "mylist.txt", "-v
 
 
 
-
-
-
-
 # Filter the frames based on brightness using ffmpeg
 merged_video_dir_path = os.path.dirname(merged_video_file_path)
 merged_video_filename = os.path.basename(merged_video_file_path)
 filtered_video_file_path = os.path.join(merged_video_dir_path, "filtered_" + merged_video_filename)
 
-# Video mit MoviePy öffnen
-video = VideoFileClip(merged_video_file_path)
+while True:
+    # Video mit MoviePy öffnen
+    video = VideoFileClip(merged_video_file_path)
 
-# Neuen Video-Clip erstellen
-filtered_video = None
+    # Neuen Video-Clip erstellen
+    filtered_video = None
 
-# Schleife über jeden Frame im Video
-for idx, frame in enumerate(video.iter_frames(), start=1):
-    # Konvertieren Sie den Frame in ein Image-Objekt
-    frame_image = Image.fromarray(frame)
-    
-    # Überprüfen Sie die Helligkeit des Frames
-    is_bright = check_brightness(frame_image)
-    
-    # Frame zum gefilterten Video hinzufügen, wenn Helligkeitsbedingung erfüllt ist
-    if is_bright:
-        if filtered_video is None:
-            # Erstellen Sie das gefilterte Video und speichern Sie den aktuellen Frame als Startpunkt
-            filtered_video = ImageSequenceClip([frame], fps=video.fps)
-        else:
-            # Fügen Sie den aktuellen Frame zum gefilterten Video hinzu
-            filtered_video = concatenate([filtered_video, ImageSequenceClip([frame], fps=video.fps)])
-    
-    print(f"Frame Nr. : {idx}")
+    # Schleife über jeden Frame im Video
+    for idx, frame in enumerate(video.iter_frames(), start=1):
+        # Konvertieren Sie den Frame in ein Image-Objekt
+        frame_image = Image.fromarray(frame)
 
-# Speichern Sie das gefilterte Video
-filtered_video.write_videofile(filtered_video_file_path)
+        # Überprüfen Sie die Helligkeit des Frames
+        is_bright = check_brightness(frame_image)
 
-# Video-Objekte freigeben
-video.close()
-filtered_video.close()
+        # Frame zum gefilterten Video hinzufügen, wenn Helligkeitsbedingung erfüllt ist
+        if is_bright:
+            if filtered_video is None:
+                # Erstellen Sie das gefilterte Video und speichern Sie den aktuellen Frame als Startpunkt
+                filtered_video = ImageSequenceClip([frame], fps=video.fps)
+            else:
+                # Fügen Sie den aktuellen Frame zum gefilterten Video hinzu
+                filtered_video = concatenate([filtered_video, ImageSequenceClip([frame], fps=video.fps)])
+
+        print(f"Frame Nr. : {idx}")
+
+    # Speichern Sie das gefilterte Video
+    filtered_video.write_videofile(filtered_video_file_path)
+
+    # Video-Objekte freigeben
+    video.close()
+    filtered_video.close()
