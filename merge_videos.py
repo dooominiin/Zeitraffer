@@ -122,5 +122,5 @@ if __name__ == "__main__":
     merged_video_dir_path = "/home/raspi/Desktop/Zeitraffer/Video_komplett"
     
     merged_video_file_path = merge_Video(video_dir_path, merged_video_dir_path)
-    select_frames = create_select_frames_array(merged_video_file_path)
-    create_selected_frames_video(merged_video_file_path, select_frames)
+    #select_frames = create_select_frames_array(merged_video_file_path)
+    #create_selected_frames_video(merged_video_file_path, select_frames)
